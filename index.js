@@ -29,20 +29,16 @@ const io = new Server(server , {
 
 io.on("connection" , (socket)=>{
     const{email} = socket.handshake.auth ;
-    console.log(email);
-    console.log("socket connected" , socket.id);
 
     socket.on("disconnect" , ()=>{
        console.log("socket disconnected")
     })
 
     socket.on("send_message" , ({email , message , group})=>{
-        console.log(message);
         io.emit("receive_message" , {email , message , group});
     })
 
     socket.on("join_group" , (group)=>{
-        console.log(`${email} joined in this ${group}`);
 
         socket.join(group);
         io.to(group).emit("user_joined" , {email});
