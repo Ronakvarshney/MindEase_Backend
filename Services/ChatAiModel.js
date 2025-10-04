@@ -1,15 +1,19 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
+dotenv.config();
 
-const apikey = "";
+const apikey = process.env.GEN_API_KEY;
 const genAi = new GoogleGenerativeAI(apikey);
 const model = genAi.getGenerativeModel({
   model: "gemini-2.0-flash",
 });
 
-const generateChat = async (input) => {
+export const generateChat = async (input) => {
+  console.log(input);
   try {
     const prompt = input?.trim();
     const content = await model.generateContent(prompt);
+
     const resp = content.response.text();
 
     return {
@@ -18,11 +22,9 @@ const generateChat = async (input) => {
       resp,
     };
   } catch (error) {
-    return ({
+    return {
       success: false,
       msg: error.message,
-    });
+    };
   }
 };
-
-module.exports = generateChat;

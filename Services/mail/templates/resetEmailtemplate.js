@@ -1,4 +1,4 @@
-const resetPasswordEmailTemplate = (username, resetUrl) => `
+export const resetPasswordEmailTemplate = (username, resetUrl) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -77,4 +77,3 @@ const resetPasswordEmailTemplate = (username, resetUrl) => `
 </html>
 `;
 
-module.exports = resetPasswordEmailTemplate;

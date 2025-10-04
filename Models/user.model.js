@@ -1,5 +1,4 @@
-const { default: mongoose } = require("mongoose");
-
+import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -40,32 +39,18 @@ const UserSchema = new mongoose.Schema(
         default: "",
       },
     },
-    appointment: [
+    appointment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+    },
+    events : [
       {
-        doctor: {
-          type: String,
-        },
-        time: {
-          type: String,
-        },
-        date: {
-          type: String,
-        },
-        personalinfo: {
-          name: { type: String },
-          email: { type: String },
-          phone: { type: String },
-          emergencyContact: { type: String },
-          language: { type: String },
-          mode: { type: String },
-          duration: { type: String },
-          symptoms: { type: String },
-          description: { type: String },
-        },
-      },
-    ],
+        type : mongoose.Schema.Types.ObjectId ,
+        ref : "Events"
+      }
+    ]
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", UserSchema);
+export const User = mongoose.model("User", UserSchema);

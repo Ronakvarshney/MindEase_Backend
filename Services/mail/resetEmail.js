@@ -1,9 +1,9 @@
-const  transporter  = require("../../Config/email")
-const resetPasswordEmailTemplate = require("./templates/resetEmailtemplate")
+import {transporter} from "../../Config/email.js"
+import {resetPasswordEmailTemplate} from "./templates/resetEmailtemplate.js"
 
 
 
-const resetEmail  = async(existingUser , resetUrl)=>{
+export const resetEmail  = async(existingUser , resetUrl)=>{
     try{
       const mailOptions = {
         from : `"MindEase" <ronakvarshney7100@gmail.com>`,
@@ -21,4 +21,3 @@ const resetEmail  = async(existingUser , resetUrl)=>{
     }
 }
 
-module.exports = {resetEmail} ;

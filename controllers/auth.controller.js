@@ -1,10 +1,9 @@
-const User = require("../Models/user.model");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken"); // Ensure you're importing the correct method
-const userModel = require("../Models/user.model");
-const { resetEmail } = require("../Services/mail/resetEmail");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { User } from "../Models/user.model.js";
+import {resetEmail} from "../Services/mail/resetEmail.js"
 
-const UserRegister = async (req, res) => {
+export const UserRegister = async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
 
@@ -52,7 +51,7 @@ const UserRegister = async (req, res) => {
   }
 };
 
-const UserLogin = async (req, res) => {
+export const UserLogin = async (req, res) => {
   try {
     const { email, password, role } = req.body;
     console.log(email, password, role);
@@ -111,7 +110,7 @@ const UserLogin = async (req, res) => {
   }
 };
 
-const UserProfile = async (req, res) => {
+export const UserProfile = async (req, res) => {
   const usertoken = req.cookies.token;
   const logintoken = req.cookies.logintoken;
   const token = usertoken ? usertoken : logintoken;
@@ -123,7 +122,7 @@ const UserProfile = async (req, res) => {
   }
   const decode = jwt.verify(token, "secret");
   const email = decode.email;
-  const existingUser = await userModel.findOne({ email });
+  const existingUser = await User.findOne({ email });
   if (!existingUser) {
     return res.json({
       success: false,
@@ -136,7 +135,7 @@ const UserProfile = async (req, res) => {
   });
 };
 
-const userLogout = async (req, res) => {
+export const userLogout = async (req, res) => {
   try {
     // Clear the token cookie
     const id = req.user.id;
@@ -163,7 +162,7 @@ const userLogout = async (req, res) => {
   }
 };
 
-const ForgotPassword = async (req, res, next) => {
+export const ForgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
     if (!email)
@@ -207,59 +206,49 @@ const ForgotPassword = async (req, res, next) => {
   }
 };
 
-const ResetPassword = async(req , res , next)=>{
-  try{
-    const{password , resetToken} = req.body ;
-    if(!password || !resetToken){
+export const ResetPassword = async (req, res, next) => {
+  try {
+    const { password, resetToken } = req.body;
+    if (!password || !resetToken) {
       return res.status(404).json({
-        message : "provide all credentials"
-      })
+        message: "provide all credentials",
+      });
     }
 
-    const decode = jwt.verify(resetToken , `${process.env.TOKEN_SECRET}`);
-    const existingUser = await User.findOne({email : decode.email});
-    if(!existingUser){
+    const decode = jwt.verify(resetToken, `${process.env.TOKEN_SECRET}`);
+    const existingUser = await User.findOne({ email: decode.email });
+    if (!existingUser) {
       return res.status(404).json({
-        message : "User email doesn't exists"
-      })
+        message: "User email doesn't exists",
+      });
     }
 
-    if(existingUser.resetToken !== resetToken){
+    if (existingUser.resetToken !== resetToken) {
       return res.status(500).json({
-        messsage : "Token mismatch or expires"
-      })
-    };
-
-    if(Date.now() > existingUser.resetTokenExpires){
-      return res.status(500).json({
-        message : "Token Expires , try again"
-      })
+        messsage: "Token mismatch or expires",
+      });
     }
 
-    const hashPassword = await bcrypt.hash(password , 10);
-    existingUser.password = hashPassword ;
-    existingUser.confirmPassword = hashPassword ;
-    existingUser.resetTokenExpires = null ;
+    if (Date.now() > existingUser.resetTokenExpires) {
+      return res.status(500).json({
+        message: "Token Expires , try again",
+      });
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    existingUser.password = hashPassword;
+    existingUser.confirmPassword = hashPassword;
+    existingUser.resetTokenExpires = null;
+    existingUser.resetToken = null ;
     await existingUser.save();
 
-
     return res.status(201).json({
-      success : true ,
-      message : "Password change successfully"
-    })
-  }
-  catch(error){
+      success: true,
+      message: "Password change successfully",
+    });
+  } catch (error) {
     return res.status(500).json({
-      message : error.message
-    })
+      message: error.message,
+    });
   }
-}
-
-module.exports = {
-  UserRegister,
-  UserLogin,
-  UserProfile,
-  userLogout,
-  ForgotPassword,
-  ResetPassword
 };

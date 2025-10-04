@@ -1,6 +1,7 @@
-const jwt = require("jsonwebtoken");  // Make sure to use the correct import for JWT
+import jwt from "jsonwebtoken"
+// Make sure to use the correct import for JWT
 
-const authMiddleware = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.token ;
     
@@ -30,4 +31,3 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware ;

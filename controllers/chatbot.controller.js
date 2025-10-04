@@ -1,6 +1,7 @@
-const { mentalHealthQA } = require("../data/Ai_trenddata");
+import {mentalHealthQA} from "../data/Ai_trenddata.js"
+import {generateChat} from "../Services/ChatAiModel.js"
 
-const ChatbotController = async (req, res) => {
+export const ChatbotController = async (req, res) => {
   try {
     const { message } = req.body;
     if (!message) {
@@ -28,4 +29,32 @@ const ChatbotController = async (req, res) => {
   }
 };
 
-module.exports = { ChatbotController };
+
+
+
+export const AskAnythingChatbotController = async(req , res)=>{
+  try{
+   const{message} = req.body;
+   if(!message){
+    return res.status(404).json({
+      success : false ,
+      message : "first provide the chat input"
+    })
+   };
+
+   const response = await generateChat(message);
+   return res.status(200).json({
+    success : true ,
+    message : "response get",
+    reply : response.resp
+   })
+  }
+  catch(error){
+    return res.status(500).json({
+      success : false ,
+      message :error.message
+    })
+  }
+}
+
+
